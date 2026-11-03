@@ -1,0 +1,26 @@
+{
+  "timezone": "Europe/Berlin",
+  "defaults": {
+    "location": "James Joyce Irish Pub, Bonn",
+    "start": "19:30",
+    "durationMinutes": 180
+  },
+  "series": [
+    {
+      "id": "acoustic",
+      "title": "Acoustic Jam",
+      "description": "Offene Acoustic Session – jeder kann mitspielen, mitsingen oder einfach zuhören.",
+      "rule": { "weekday": "monday", "nth": 1 },
+      "from": "2026-01-01"
+    },
+    {
+      "id": "bluegrass",
+      "title": "Bluegrass Jam",
+      "description": "Offene Bluegrass Session – Gitarre, Banjo, Mando, Bass, Fiddle, Dobro und Gesang willkommen.",
+      "rule": { "weekday": "tuesday", "nth": 3 },
+      "from": "2026-01-01"
+    }
+  ],
+  "overrides": {},
+  "extra": []
+}

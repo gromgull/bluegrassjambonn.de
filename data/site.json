@@ -1,0 +1,22 @@
+{
+  "title": "Acoustic & Bluegrass Jam Bonn",
+  "description": "Offene Acoustic- und Bluegrass-Sessions im James Joyce Irish Pub in Bonn. Jeden ersten Montag und jeden dritten Dienstag im Monat, ca. 19:30 Uhr.",
+  "venue": "im James Joyce Irish Pub",
+  "intro": [
+    "<strong>Jeder</strong> kann dabei sein:"
+  ],
+  "instruments": "Gitarre, Banjo, Mando, Bass, Fiddle, Dobro, usw., und natürlich: Gesang! Und gern auch: Publikum!",
+  "schedule": [
+    { "title": "Acoustic Jam", "when": "jeden ersten Montag im Monat" },
+    { "title": "Bluegrass Jam", "when": "jeden dritten Dienstag im Monat" }
+  ],
+  "startNote": "ca. 19:30 Uhr Start",
+  "horizonMonths": 6,
+  "links": {
+    "instagram": "https://www.instagram.com/bluegrass_jam_bonn/",
+    "facebook": "https://www.facebook.com/p/Bluegrass-Jam-Bonn-Acoustic-Jam-Bonn-100083288919617/"
+  },
+  "venueUrl": "https://www.facebook.com/p/James-Joyce-Irish-Pub-Bonn-100063748743849/",
+  "url": "https://bluegrassjambonn.de/",
+  "calendarName": "Bluegrass Jam Bonn"
+}

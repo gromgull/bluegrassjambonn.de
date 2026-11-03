@@ -1,0 +1,18 @@
+{
+  "name": "bluegrass-jam-bonn",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static website and calendar feed for Acoustic & Bluegrass Jam Bonn",
+  "type": "module",
+  "bin": {
+    "jam": "bin/jam.mjs"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/build.mjs && node scripts/serve.mjs",
+    "jam": "node bin/jam.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
