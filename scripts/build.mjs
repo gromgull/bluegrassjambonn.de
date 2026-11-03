@@ -1,7 +1,7 @@
-// Builds the static site into dist/: index.html, events.ics and assets.
+// Builds the static site into dist/: index.html, songs.html, links.html, events.ics and assets.
 import { mkdirSync, rmSync, cpSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { ROOT, loadData, loadSite, expandEvents, todayIn, addMonths, addMonthsKeepDay } from "../lib/events.mjs";
+import { ROOT, loadData, loadSite, readJson, expandEvents, todayIn, addMonths, addMonthsKeepDay } from "../lib/events.mjs";
 import { buildIcs } from "../lib/ics.mjs";
 
 const OUT = join(ROOT, "dist");
@@ -52,6 +52,7 @@ function eventItem(e) {
 const icons = {
   instagram: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1.1.4 2.2.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1.1.4-2.2.4-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1.1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1.1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 2c-3.1 0-3.5 0-4.7.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.3.8-.4.4-.6.8-.8 1.3-.1.4-.3 1-.4 2.1-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.3.4.4.8.6 1.3.8.4.1 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.3-.8.4-.4.6-.8.8-1.3.1-.4.3-1 .4-2.1.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1.1-.2-1.7-.4-2.1-.2-.5-.4-.9-.8-1.3-.4-.4-.8-.6-1.3-.8-.4-.1-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1zm0 3.1a4.7 4.7 0 1 1 0 9.4 4.7 4.7 0 0 1 0-9.4zm0 7.6a2.9 2.9 0 1 0 0-5.8 2.9 2.9 0 0 0 0 5.8zm6-7.8a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0z"/></svg>`,
   facebook: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13.5 21.9v-7.7h2.6l.4-3h-3V9.3c0-.9.2-1.5 1.5-1.5h1.6V5.1c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H7.8v3h2.6v7.7C5.6 21.2 2 17 2 12 2 6.5 6.5 2 12 2s10 4.5 10 10c0 5-3.6 9.2-8.5 9.9z"/></svg>`,
+  spotify: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="currentColor"/><g fill="none" stroke="var(--icon-cut, #fff)" stroke-linecap="round"><path d="M6.5 9.2c3.6-1.1 7.6-.8 11 .9" stroke-width="1.9"/><path d="M7.2 12.5c3-.9 6.2-.6 8.9.8" stroke-width="1.6"/><path d="M7.8 15.6c2.4-.6 4.8-.4 6.9.6" stroke-width="1.3"/></g></svg>`,
   calendar: `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 2h2v2h6V2h2v2h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3V2zm12 8H5v9h14v-9zM5 6v2h14V6H5z"/></svg>`,
 };
 
@@ -137,6 +138,7 @@ a { color: inherit; }
 
 main { padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 5vw, 4.5rem) 3rem 1rem; max-width: 52rem; }
 .logo-mobile { display: none; }
+.logo-mobile img { display: block; width: 100%; height: auto; }
 
 .hero { text-align: right; }
 .bar { height: 10px; background: var(--teal); border: 0; margin: 0; }
@@ -197,8 +199,54 @@ h2::after { content: ""; flex: 1; height: 6px; background: var(--teal); }
 .is-cancelled .event-date { background: #8d8779; }
 .is-cancelled .event-meta { text-decoration: line-through; }
 
-.subscribe { background: var(--card); border-radius: 14px; padding: 1.3rem 1.4rem; }
-.subscribe p { margin: 0 0 1rem; }
+.card { background: var(--card); border-radius: 14px; padding: 1.3rem 1.4rem; }
+.card p { margin: 0 0 1rem; }
+
+/* tabs */
+.tabs { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.4rem; margin: 0 0 2.2rem; }
+.tabs a {
+  font: 700 1rem/1 var(--body); text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none;
+  padding: 0.65em 1.05em; border-radius: 99px; background: var(--card);
+}
+.tabs a:hover { background: var(--coral); color: #fff; }
+.tabs a[aria-current="page"] { background: var(--ink); color: #fff; }
+
+/* compact title on sub-pages */
+h1.small-title { font-size: clamp(1.9rem, 4.4vw, 3.3rem); }
+.hero-small .bar { height: 7px; }
+.page-intro { font-size: 1.35rem; margin: 1.2rem 0 0; }
+.playlist { margin: 1rem 0 0; }
+.btn { --icon-cut: var(--ink); }
+.btn:hover { --icon-cut: var(--coral); }
+.hero-small + section { margin-top: 3rem; }
+
+/* songs & tunes */
+.repertoire {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 0.6rem;
+}
+.repertoire li {
+  background: var(--card); border-radius: 12px; padding: 0.7rem 1rem 0.75rem;
+  border-left: 8px solid var(--teal);
+  display: flex; flex-direction: column; justify-content: center; min-height: 4rem;
+}
+#tunes .repertoire li { border-left-color: var(--coral); }
+.r-title { font: 800 1.08rem/1.25 var(--display); }
+.r-artist { font-size: 1.02rem; opacity: 0.75; }
+
+/* links */
+.links { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+.link-card {
+  display: grid; gap: 0.2rem; text-decoration: none;
+  background: var(--card); border-radius: 14px; padding: 1rem 1.2rem; border-left: 8px solid var(--teal);
+}
+.links li:nth-child(even) .link-card { border-left-color: var(--coral); }
+.l-title .badge { margin-left: 0.3em; }
+.link-card:hover { background: #fffaf2; }
+.link-card:hover .l-title { color: var(--coral); }
+.l-title { font: 800 1.35rem/1.2 var(--display); }
+.l-desc { font-size: 1.12rem; }
+.l-host { font-size: 0.95rem; opacity: 0.65; }
 .buttons { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 .btn {
   display: inline-flex; align-items: center; gap: 0.5em; text-decoration: none;
@@ -226,7 +274,9 @@ footer { margin-top: 4rem; display: flex; flex-wrap: wrap; align-items: center; 
   .layout { display: block; }
   .guitar-col { display: none; }
   main { padding: 1.5rem 1rem 2.5rem; }
-  .logo-mobile { display: block; width: 92px; margin: 0 auto 1.2rem; }
+  .logo-mobile { display: block; width: 92px; margin: 0 auto 1rem; }
+  .tabs { justify-content: center; flex-wrap: nowrap; gap: 0.25rem; margin-bottom: 1.6rem; }
+  .tabs a { font-size: 0.8rem; letter-spacing: 0.02em; padding: 0.65em 0.7em; white-space: nowrap; }
   .hero { text-align: center; }
   .bar-top { width: 80%; margin: 0 auto; }
   .venue { padding-left: 0; }
@@ -243,15 +293,49 @@ footer { margin-top: 4rem; display: flex; flex-wrap: wrap; align-items: center; 
 @media (prefers-reduced-motion: no-preference) { .btn, .social { transition: background 0.15s, color 0.15s; } }
 `;
 
-const html = `<!doctype html>
+const footer = `
+    <footer>
+      <div class="socials">
+          ${socials}
+      </div>
+      <div class="logos">
+        <a href="./" title="Startseite"><img src="assets/logo.png" alt="Bluegrass Jam Bonn" width="96" height="96"></a>
+        ${site.venueUrl ? `<a href="${esc(site.venueUrl)}" rel="noopener" target="_blank" title="James Joyce Irish Pub auf Facebook"><img src="assets/james-joyce.png" alt="James Joyce Irish Pub" width="96" height="96"></a>` : `<img src="assets/james-joyce.png" alt="James Joyce Irish Pub" width="96" height="96">`}
+      </div>
+      <p class="small">Stand: ${esc(fmt(today, { day: "numeric", month: "long", year: "numeric" }))}</p>
+    </footer>`;
+
+const PAGES = [
+  { file: "index.html", href: "./", label: "Termine" },
+  { file: "songs.html", href: "songs.html", label: "Songs & Tunes" },
+  { file: "links.html", href: "links.html", label: "Links & Friends" },
+];
+
+const nav = (current) => `
+    <nav class="tabs" aria-label="Seiten">
+      ${PAGES.map((p) => `<a href="${p.href}"${p.file === current ? ' aria-current="page"' : ""}>${esc(p.label)}</a>`).join("\n      ")}
+    </nav>`;
+
+const title = (small) => `
+      <hr class="bar bar-top">
+      <h1${small ? ' class="small-title"' : ""}>
+        <span class="line">Acoustic &amp;</span>
+        <span class="line">Bluegrass</span>
+        <span class="line"><span class="bonn">Bonn</span><span class="jam">Jam</span></span>
+      </h1>
+      <hr class="bar bar-bottom">`;
+
+function layout({ file, pageTitle, description, body, script = "" }) {
+  const fullTitle = pageTitle ? `${pageTitle} – ${site.title}` : site.title;
+  return `<!doctype html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(site.title)}</title>
-<meta name="description" content="${esc(site.description)}">
-<meta property="og:title" content="${esc(site.title)}">
-<meta property="og:description" content="${esc(site.description)}">
+<title>${esc(fullTitle)}</title>
+<meta name="description" content="${esc(description ?? site.description)}">
+<meta property="og:title" content="${esc(fullTitle)}">
+<meta property="og:description" content="${esc(description ?? site.description)}">
 <meta property="og:image" content="assets/logo.png">
 <link rel="icon" href="assets/logo.png">
 <link rel="alternate" type="text/calendar" title="${esc(site.calendarName)}" href="events.ics">
@@ -265,15 +349,22 @@ const html = `<!doctype html>
   <div class="guitar-col">${guitar}
   </div>
   <main>
-    <img class="logo-mobile" src="assets/logo.png" alt="Bluegrass Jam Bonn Logo">
-    <header class="hero">
-      <hr class="bar bar-top">
-      <h1>
-        <span class="line">Acoustic &amp;</span>
-        <span class="line">Bluegrass</span>
-        <span class="line"><span class="bonn">Bonn</span><span class="jam">Jam</span></span>
-      </h1>
-      <hr class="bar bar-bottom">
+    <a class="logo-mobile" href="./"><img src="assets/logo.png" alt="Bluegrass Jam Bonn Logo"></a>
+    ${nav(file)}
+${body}
+${footer}
+  </main>
+</div>
+${script}
+</body>
+</html>
+`;
+}
+
+// --- Termine (home) ----------------------------------------------------------
+
+const homeBody = `
+    <header class="hero">${title(false)}
       <p class="venue">${esc(site.venue)}</p>
       ${site.intro.map((p) => `<p class="everyone">${p}</p>`).join("\n      ")}
       <p class="instruments">${esc(site.instruments)}</p>
@@ -290,7 +381,7 @@ const html = `<!doctype html>
 
     <section id="kalender" aria-labelledby="kalender-h">
       <h2 id="kalender-h">Kalender</h2>
-      <div class="subscribe">
+      <div class="card">
         <p>Abonniere unseren Kalender – Absagen und Änderungen landen dann automatisch in deinem Kalender.</p>
         <div class="buttons">
           <a class="btn" id="webcal" href="events.ics">${icons.calendar}Kalender abonnieren</a>
@@ -298,21 +389,9 @@ const html = `<!doctype html>
           <a class="btn alt" href="events.ics" download>.ics herunterladen</a>
         </div>
       </div>
-    </section>
+    </section>`;
 
-    <footer>
-      <div class="socials">
-          ${socials}
-      </div>
-      <div class="logos">
-        <img src="assets/logo.png" alt="Bluegrass Jam Bonn" width="96" height="96">
-        ${site.venueUrl ? `<a href="${esc(site.venueUrl)}" rel="noopener" target="_blank" title="James Joyce Irish Pub auf Facebook"><img src="assets/james-joyce.png" alt="James Joyce Irish Pub" width="96" height="96"></a>` : `<img src="assets/james-joyce.png" alt="James Joyce Irish Pub" width="96" height="96">`}
-      </div>
-      <p class="small">Stand: ${esc(fmt(today, { day: "numeric", month: "long", year: "numeric" }))}</p>
-    </footer>
-  </main>
-</div>
-<script>
+const homeScript = `<script>
   // Hide events that have passed since the last build.
   (function () {
     var p = new Intl.DateTimeFormat("en-CA", { timeZone: ${JSON.stringify(data.timezone)}, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
@@ -326,15 +405,61 @@ const html = `<!doctype html>
     document.getElementById("webcal").href = webcal;
     document.getElementById("gcal").href = "https://calendar.google.com/calendar/render?cid=" + encodeURIComponent(webcal);
   })();
-</script>
-</body>
-</html>
-`;
+</script>`;
+
+// --- Songs & Tunes -----------------------------------------------------------
+
+const songs = readJson("songs.json");
+const repertoire = (id, heading, items) => `
+    <section id="${id}" aria-labelledby="${id}-h">
+      <h2 id="${id}-h">${esc(heading)}</h2>
+      <ul class="repertoire">
+        ${items
+          .map((s) => `<li><span class="r-title">${esc(s.title)}</span>${s.artist ? `<span class="r-artist">${esc(s.artist)}</span>` : ""}</li>`)
+          .join("\n        ")}
+      </ul>
+    </section>`;
+
+const songsBody = `
+    <header class="hero hero-small">${title(true)}
+      <p class="page-intro">${esc(songs.intro ?? "Das spielen wir oft – zum Mitspielen, Mitsingen und Üben für die nächste Session.")}</p>
+      ${songs.playlist ? `<p class="playlist"><a class="btn" href="${esc(songs.playlist)}" rel="noopener" target="_blank">${icons.spotify}Playlist auf Spotify</a></p>` : ""}
+    </header>
+${repertoire("songs", "Songs", songs.songs ?? [])}
+${repertoire("tunes", "Tunes", songs.tunes ?? [])}`;
+
+// --- Links & Friends ---------------------------------------------------------
+
+const links = readJson("links.json");
+const host = (url) => new URL(url).hostname.replace(/^www\./, "");
+const linksBody = `
+    <header class="hero hero-small">${title(true)}
+      <p class="page-intro">Freunde, Sessions und Orte rund um Bluegrass &amp; Acoustic Music.</p>
+    </header>
+
+    <section id="links" aria-labelledby="links-h">
+      <h2 id="links-h">Links &amp; Friends</h2>
+      <ul class="links">
+        ${links
+          .map(
+            (l) => `<li><a class="link-card" href="${esc(l.url)}" rel="noopener" target="_blank">
+          <span class="l-title">${esc(l.title)}${l.tag ? ` <span class="badge">${esc(l.tag)}</span>` : ""}</span>
+          ${l.description ? `<span class="l-desc">${esc(l.description)}</span>` : ""}
+          <span class="l-host">${esc(host(l.url))} ↗</span>
+        </a></li>`,
+          )
+          .join("\n        ")}
+      </ul>
+    </section>`;
+
+// --- write -------------------------------------------------------------------
 
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
 cpSync(join(ROOT, "src", "assets"), join(OUT, "assets"), { recursive: true });
-writeFileSync(join(OUT, "index.html"), html);
+writeFileSync(join(OUT, "index.html"), layout({ file: "index.html", body: homeBody, script: homeScript }));
+writeFileSync(join(OUT, "songs.html"), layout({ file: "songs.html", pageTitle: "Songs & Tunes", description: "Songs und Tunes, die wir bei der Bluegrass Jam Bonn spielen.", body: songsBody }));
+writeFileSync(join(OUT, "links.html"), layout({ file: "links.html", pageTitle: "Links & Friends", description: "Freunde, Sessions und Links rund um die Bluegrass Jam Bonn.", body: linksBody }));
 writeFileSync(
   join(OUT, "events.ics"),
   buildIcs(feedEvents, {
@@ -346,4 +471,4 @@ writeFileSync(
 );
 writeFileSync(join(OUT, ".nojekyll"), "");
 
-console.log(`Built dist/ — ${upcoming.length} upcoming on the page, ${feedEvents.length} in events.ics`);
+console.log(`Built dist/ — ${upcoming.length} upcoming on the page, ${feedEvents.length} in events.ics, ${(songs.songs ?? []).length + (songs.tunes ?? []).length} songs & tunes, ${links.length} links`);

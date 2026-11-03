@@ -1,0 +1,31 @@
+{
+  "playlist": "https://open.spotify.com/playlist/2iJpvP3o6BNaPLqyOakitJ",
+  "songs": [
+    { "title": "Wagon Wheel", "artist": "Old Crow Medicine Show" },
+    { "title": "All the Good Times Are Past and Gone", "artist": "Traditional" },
+    { "title": "I Saw the Light", "artist": "Hank Williams" },
+    { "title": "I'm Going to Make Heaven My Home", "artist": "" },
+    { "title": "Roll in My Sweet Baby's Arms", "artist": "Traditional" },
+    { "title": "We'll Meet Again Sweetheart", "artist": "Lester Flatt & Earl Scruggs" },
+    { "title": "Why You Been Gone So Long", "artist": "Mickey Newbury" },
+    { "title": "Will the Circle Be Unbroken", "artist": "The Carter Family" },
+    { "title": "Old Home Place", "artist": "J.D. Crowe & The New South" },
+    { "title": "Tennessee Waltz", "artist": "Patsy Cline" },
+    { "title": "Jolene", "artist": "Dolly Parton" },
+    { "title": "I'll Fly Away", "artist": "Alison Krauss & Gillian Welch" },
+    { "title": "Keep on the Sunny Side", "artist": "The Carter Family" }
+  ],
+  "tunes": [
+    { "title": "Big Sciota", "artist": "Traditional" },
+    { "title": "Angeline the Baker", "artist": "Traditional" },
+    { "title": "Blackberry Blossom", "artist": "Traditional" },
+    { "title": "Salt Spring", "artist": "" },
+    { "title": "Foggy Mountain Breakdown", "artist": "Earl Scruggs" },
+    { "title": "Old Joe Clark", "artist": "Traditional" },
+    { "title": "Cherokee Shuffle", "artist": "Traditional" },
+    { "title": "Bill Cheatham", "artist": "Traditional" },
+    { "title": "Arkansas Traveller", "artist": "Traditional" },
+    { "title": "Cripple Creek", "artist": "Traditional" },
+    { "title": "Boil That Cabbage Down", "artist": "Traditional" }
+  ]
+}

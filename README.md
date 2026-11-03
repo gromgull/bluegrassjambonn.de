@@ -4,7 +4,7 @@ Static website + subscribable calendar (`events.ics`) for the jams at the James 
 No dependencies, just Node ≥ 20.
 
 ```sh
-npm run build   # → dist/index.html, dist/events.ics
+npm run build   # → dist/index.html, songs.html, links.html, events.ics
 npm run dev     # build + preview at http://localhost:8080
 ```
 
@@ -14,6 +14,8 @@ npm run dev     # build + preview at http://localhost:8080
 | --- | --- |
 | `data/site.json` | Page text, links, `horizonMonths` (how far ahead events are generated, default 6) |
 | `data/events.json` | Recurring series, per-event overrides, one-off events |
+| `data/songs.json` | Songs & Tunes page: `playlist` (Spotify link), `songs` and `tunes`, each `{ title, artist }` |
+| `data/links.json` | Links & Friends page: list of `{ title, url, description, tag? }` |
 | `scripts/build.mjs` | HTML/CSS template and build |
 | `lib/events.mjs` | Recurrence expansion + overrides |
 | `lib/ics.mjs` | Calendar feed writer |
